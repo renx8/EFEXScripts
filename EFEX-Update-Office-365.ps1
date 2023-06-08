@@ -4,8 +4,8 @@ This script will update Office 365 if the user accepts the efex branded pop up. 
 #>
 
 function get-efexpopup() {
-[void] [System.Reflection.Assembly]::LoadWithPartialName("System.Drawing")
-[void] [System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms")
+Add-Type -AssemblyName System.Drawing
+Add-Type -AssemblyName System.Windows.Forms
 
 $file = (get-item 'C:\_EFEX\efexlogo.jpg')
 $ans = 0
@@ -68,7 +68,7 @@ $Form.Controls.Add($Label)
 
 $Form.Topmost = $True
 $Form.Add_Shown({$Form.Activate()})
-[void] $Form.ShowDialog()
+$Form.ShowDialog()
 Write-output $ans
     
 }
