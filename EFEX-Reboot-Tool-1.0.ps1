@@ -1,3 +1,6 @@
+# Start Logging
+$logfile = "C:\_EFEX\Reboot-Tool.txt"
+Start-Transcript -path $LogFile -append
 
 # reboot Script V3.0 
 # This script will reboot any machines that have a pending reboot.
@@ -268,3 +271,5 @@ function New-PopUpMessage($timeout,$message) {
         Write-Host "Computer $($ENV:ComputerName) does not require a reboot. Exiting Script"
         Exit
     }
+
+Stop-Transcript
