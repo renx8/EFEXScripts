@@ -254,7 +254,7 @@ function New-PopUpMessage($timeout,$message) {
     your computer is pending a restart. Please restart your computer now or delay for 1 hour. Note - Your computer will restart in 1 hour if no option is selected!"
     
     
-    if (!($results -eq $true)){
+    if ($results -eq $true){
     
         $result = New-PopupMessage -message $message -timeout $timeout
             if ($result -eq [System.Windows.Forms.DialogResult]::OK) {
