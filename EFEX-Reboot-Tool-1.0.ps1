@@ -239,7 +239,7 @@ function New-PopUpMessage($timeout,$message) {
     $filepath = 'C:\_EFEX\efexlogo.jpg'
     $uri = "https://i.ibb.co/tLV5SGL/efexlogo.jpg"
     
-    if (!(test-path -path $path)){
+    if (test-path -path $path){
         New-Item -Path "C:\" -Name "_EFEX" -ItemType "Directory"
         Invoke-WebRequest -Uri $uri -OutFile $filepath
     }
