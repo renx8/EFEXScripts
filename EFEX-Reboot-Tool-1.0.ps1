@@ -1,10 +1,3 @@
-# Start Logging
-$logfile = "C:\_EFEX\Reboot-Tool.txt"
-Start-Transcript -path $LogFile -append
-
-# reboot Script V3.0 
-# This script will reboot any machines that have a pending reboot.
-
 #remain hidden
 # .Net methods for hiding/showing the console in the background
 Add-Type -Name Window -Namespace Console -MemberDefinition '
@@ -21,6 +14,15 @@ function Hide-Console
     [Console.Window]::ShowWindow($consolePtr, 0)
 }
 Hide-Console
+
+# Start Logging
+$logfile = "C:\_EFEX\Reboot-Tool.txt"
+Start-Transcript -path $LogFile -append
+
+# reboot Script V3.0 
+# This script will reboot any machines that have a pending reboot.
+
+
 
 # Hash table to store registry checks
 <#PSScriptInfo
@@ -180,6 +182,9 @@ function New-PopUpMessage($timeout,$message) {
     $form.Width = 380;
     $form.Height = 250;
     $Form.StartPosition = "CenterScreen"
+    $form.MinimizeBox = $false
+    $form.MaximizeBox = $false
+    $form.ControlBox = $false
     
     $pictureBox = new-object Windows.Forms.PictureBox
     $pictureBox.Width =  $img.Size.Width;
@@ -249,7 +254,7 @@ function New-PopUpMessage($timeout,$message) {
     your computer is pending a restart. Please restart your computer now or delay for 1 hour. Note - Your computer will restart in 1 hour if no option is selected!"
     
     
-    if ($results -eq $true){
+    if (!($results -eq $true)){
     
         $result = New-PopupMessage -message $message -timeout $timeout
             if ($result -eq [System.Windows.Forms.DialogResult]::OK) {
