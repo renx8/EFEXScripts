@@ -16,7 +16,7 @@
   }
   Hide-Console            
 
-  $logfile = "C:\_EFEX\Reboot-Tool.txt"
+  $logfile = "C:\_EFEX\Office-Updater-tool-1.3.txt"
   Start-Transcript -path $LogFile -append
 
   function New-PopUpMessage($timeout,$message,$button1text,$button2text) {
