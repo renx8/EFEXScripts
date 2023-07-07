@@ -41,7 +41,7 @@
     # This tip from http://stackoverflow.com/questions/3358372/windows-forms-look-different-in-powershell-and-powershell-ise-why/3359274#3359274
     [System.Windows.Forms.Application]::EnableVisualStyles();
     $form = new-object Windows.Forms.Form
-    $form.Text = "EFEX - Reboot Pending"
+    $form.Text = "EFEX - Office Update"
     $form.Width = 380;
     $form.Height = 250;
     $Form.StartPosition = "CenterScreen"
@@ -103,7 +103,7 @@
 
 ### Varibales for popup box
 
-$timeout = 10
+$timeout = 3600
 $Button1Text = 'Update Now'
 $Button2Text = 'Postpone'
 $message = "Hi $($env:username),
@@ -111,7 +111,7 @@ your computer is running a vulnerable version of office. Please update office no
 Note - updating office will restart office applications. Please save your work prior to updating."
 
 $message2 = "You have postponed the maximum number of times. Please update now! If you postpone again, your office will update in 30 minutes."
-$timeout2 = 5
+$timeout2 = 600
 $button1text2 = "Update Now"
 $button2text2 = "Postpone"
          
