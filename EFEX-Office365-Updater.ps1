@@ -15,7 +15,10 @@
       [Console.Window]::ShowWindow($consolePtr, 0)
   }
   Hide-Console            
-  
+
+  $logfile = "C:\_EFEX\Reboot-Tool.txt"
+  Start-Transcript -path $LogFile -append
+
   function New-PopUpMessage($timeout,$message,$button1text,$button2text) {
     Add-Type -AssemblyName System.Drawing
     Add-Type -AssemblyName System.Windows.Forms
@@ -158,3 +161,4 @@ $counter = 0
     }
                 
 }     
+end-transcript
