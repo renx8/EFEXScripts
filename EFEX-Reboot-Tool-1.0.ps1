@@ -259,7 +259,7 @@ function New-PopUpMessage($timeout,$message) {
         $result = New-PopupMessage -message $message -timeout $timeout
             if ($result -eq [System.Windows.Forms.DialogResult]::OK) {
                 Write-Host "$($ENV:Username) clicked restart now"
-                #Restart-Computer -Force
+                Restart-Computer -Force
             }
             elseif ($result -eq [System.Windows.Forms.DialogResult]::retry){
                 Write-Host "$($ENV:Username) clicked Delay 1 Hour"
