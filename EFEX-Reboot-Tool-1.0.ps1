@@ -1,3 +1,7 @@
+
+# reboot Script V3.0 
+# This script will reboot any machines that have a pending reboot.
+
 #remain hidden
 # .Net methods for hiding/showing the console in the background
 Add-Type -Name Window -Namespace Console -MemberDefinition '
@@ -14,15 +18,6 @@ function Hide-Console
     [Console.Window]::ShowWindow($consolePtr, 0)
 }
 Hide-Console
-
-# Start Logging
-$logfile = "C:\_EFEX\Reboot-Tool.txt"
-Start-Transcript -path $LogFile -append
-
-# reboot Script V3.0 
-# This script will reboot any machines that have a pending reboot.
-
-
 
 # Hash table to store registry checks
 <#PSScriptInfo
@@ -167,10 +162,24 @@ foreach ($test in $tests) {
 }
 
 
-function New-PopUpMessage($timeout,$message) {
+  function New-PopUpMessage($timeout,$message,$button1text,$button2text) {
     Add-Type -AssemblyName System.Drawing
     Add-Type -AssemblyName System.Windows.Forms
     
+    $path = "C:\_EFEX"
+    $filepath = 'C:\_EFEX\efexlogo.jpg'
+    $uri = "https://i.ibb.co/tLV5SGL/efexlogo.jpg"
+    
+    if (!(test-path -path $path)){
+        New-Item -Path "C:\" -Name "_EFEX" -ItemType "Directory"
+        Invoke-WebRequest -Uri $uri -OutFile $filepath
+    }
+    else {
+    if (!(test-path -path $filepath)) {
+        Invoke-WebRequest -Uri $uri -OutFile $filepath
+    }
+    }
+
     $file = (get-item 'C:\_EFEX\efexlogo.jpg')
     $ans = 0
     $img = [System.Drawing.Image]::Fromfile($file);
@@ -193,24 +202,26 @@ function New-PopUpMessage($timeout,$message) {
     $pictureBox.Image = $img;
     $form.controls.add($pictureBox)
     
-    $restartButton = New-Object System.Windows.Forms.Button
-    $restartButton.Location = New-Object System.Drawing.Size(100,160)
-    $restartButton.Size = New-Object System.Drawing.Size(80,23)
-    $restartButton.Text = "Restart Now"
-    $Form.Controls.Add($RestartButton)
-    $restartButton.DialogResult = [System.Windows.Forms.DialogResult]::OK
-    $form.AcceptButton = $restartButton
-    $form.Controls.Add($restartButton)
-    $restartButton.BackColor = 'White'
+    $Button1 = New-Object System.Windows.Forms.Button
+    $Button1.Location = New-Object System.Drawing.Size(100,160)
+    $Button1.Size = New-Object System.Drawing.Size(80,23)
+    $Button1.Text = $Button1Text
+    $Form.Controls.Add($Button1)
+    $Button1.DialogResult = [System.Windows.Forms.DialogResult]::OK
+    $form.AcceptButton = $Button1
+    $form.Controls.Add($Button1)
+    $Button1.BackColor = 'White'
 
-    $DelayButton = New-Object System.Windows.Forms.Button
-    $DelayButton.Location = New-Object System.Drawing.Size(180,160)
-    $DelayButton.Size = New-Object System.Drawing.Size(75,23)
-    $DelayButton.Text = "Delay 1H"
-    $delayButton.DialogResult = [System.Windows.Forms.DialogResult]::retry
-    $delayButton.BackColor = 'White'
-    $form.AcceptButton = $delayButton
-    $form.Controls.Add($delayButton)
+    $Button2 = New-Object System.Windows.Forms.Button
+    $Button2.Location = New-Object System.Drawing.Size(180,160)
+    $Button2.Size = New-Object System.Drawing.Size(75,23)
+    $Button2.Text = $Button2text
+    $Button2.DialogResult = [System.Windows.Forms.DialogResult]::retry
+    $Button2.BackColor = 'White'
+    $form.AcceptButton = $Button2
+    if($button2text -ne ""){
+    $form.Controls.Add($Button2)
+    }
     
     $Form.Controls.Add($DelayButton)
     
@@ -234,47 +245,82 @@ function New-PopUpMessage($timeout,$message) {
     $form.Dispose()
 
 }
-    
-    $path = "C:\_EFEX"
-    $filepath = 'C:\_EFEX\efexlogo.jpg'
-    $uri = "https://i.ibb.co/tLV5SGL/efexlogo.jpg"
-    
-    if (test-path -path $path){
-        New-Item -Path "C:\" -Name "_EFEX" -ItemType "Directory"
-        Invoke-WebRequest -Uri $uri -OutFile $filepath
-    }
-    else {
-    if (!(test-path -path $filepath)) {
-        Invoke-WebRequest -Uri $uri -OutFile $filepath
-    }
-    }
+
+# Variables for popup - Misc
+   $countdown = 3
  
+ # Variables for popup - Timers
     $timeout = 3600
-    $message = "Hi $($env:username), 
-    your computer is pending a restart. Please restart your computer now or delay for 1 hour. Note - Your computer will restart in 1 hour if no option is selected!"
+    $timeout2 = 1800
+
+# variable for popup - Messages
     
+
+    
+    #$message2 = "Hi $($env:username), 
+    ##your computer is pending a restart. Please restart your computer now or delay for 1 hour. You have 2 postpones left!"
+    
+    #$message3 = "Hi $($env:username), 
+    #your computer is pending a restart. Please restart your computer now or delay for 1 hour. You have 1 postpones left!"
+    
+    $message2 = "Hi $($env:username), 
+    your computer is pending a restart. You have reached the maximum number of postpones. Please restart now or you can postpone for 30 more minutes.This popup will close and restart the machine in 30 minutes."
+    
+ 
+# Variable for popup - Buttons
+    $button1 = "Restart Now"
+    $button2 = "Postpone"
+    $button1_1 = "Restart Now"
+    $button2_2 = "Delay"
+
     
     if ($results -eq $true){
+        do {
+            $message = "Hi $($env:username), your computer is pending a restart. Please restart your computer now or delay for 1 hour. You have $countdown postpones left!"
+            $result = New-PopupMessage -message $message -timeout $timeout -button1text $button1 -button2text $button2
+                if ($result -eq [System.Windows.Forms.DialogResult]::OK) {
+                    Write-Host "$($ENV:Username) clicked restart now"
+                    $result = 0
+                    Restart-Computer -Force
+                }
+                elseif ($result -eq [System.Windows.Forms.DialogResult]::retry){
+                    Write-Host "$($ENV:Username) clicked Postpone 1 hour"
+                    $result = 1
+                    Start-Sleep -Seconds $timeout
+                    $countdown--
+                
+                }
+                else{
+                    Write-Host "$($ENV:Username) did not select option within the timeout of $timeout seconds. Restarting..."
+                    Write-Host "Popup timed out... waiting to reprompt"
+                    Start-Sleep -seconds $timeout
+                    $countdown--
+                }
     
-        $result = New-PopupMessage -message $message -timeout $timeout
-            if ($result -eq [System.Windows.Forms.DialogResult]::OK) {
-                Write-Host "$($ENV:Username) clicked restart now"
-                Restart-Computer -Force
-            }
-            elseif ($result -eq [System.Windows.Forms.DialogResult]::retry){
-                Write-Host "$($ENV:Username) clicked Delay 1 Hour"
-                Start-Sleep -Seconds $timeout
-                Restart-Computer -Force
-            }
-            else{
-                Write-Host "$($ENV:Username) did not select option within the timeout of $timeout seconds. Restarting..."
-                Restart-Computer -Force
-            }
-    
+        } until ($countdown -eq 0 -or $result -eq 0)
     }
+    
     Else {
         Write-Host "Computer $($ENV:ComputerName) does not require a reboot. Exiting Script"
         Exit
     }
+     
 
-Stop-Transcript
+    if($countdown -eq 0){
+        New-PopupMessage -message $message2 -timeout $timeout2 -button1text $button1_1 -button2text $button2_2
+        if($result -eq [System.Windows.Forms.DialogResult]::OK) {
+            Write-Host "$($ENV:Username) clicked restart now"
+            Restart-Computer -Force
+        }
+        Elseif($result -eq [System.Windows.Forms.DialogResult]::retry){
+             write-host "$($ENV:Username) delayed for 30 mins"    
+             Start-Sleep -Seconds $timeout2
+             Restart-Computer -Force
+        }
+        else{
+            Write-host "Popup timed out. Restarting in 30 minutes"
+            Start-Sleep -seconds 60
+            Restart-Computer -Force
+        }
+    }
+
